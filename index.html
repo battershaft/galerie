@@ -458,45 +458,9 @@
       countPillEl.innerHTML = `<strong>${esc(label)}</strong>`;
     }
 
-    function buildTagOptions(items){
-      const tags = unique(items.flatMap(i => i.tags || []).map(t => String(t).trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'de'));
-      tagEl.innerHTML = '<option value="">Alle</option>' + tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-    }
-
-    function applyFilters(){
-      const q = (qEl.value || '').trim().toLowerCase();
-      const tag = tagEl.value || '';
-
-      let items = allItems.slice();
-
-      if (tag){
-        items = items.filter(i => (i.tags || []).includes(tag));
-      }
-
-      if (q){
-        items = items.filter(i => {
-          const hay = [i.title, i.src, i.description, ...(i.tags||[])].join(' ').toLowerCase();
-          return hay.includes(q);
-        });
-      }
-
-      const sort = sortEl.value;
-      if (sort === 'name-asc' || sort === 'name-desc'){
-        items.sort((a,b)=> (a.title||'').localeCompare((b.title||''),'de', {numeric:true, sensitivity:'base'}));
-        if (sort === 'name-desc') items.reverse();
-      } else {
-        // newest/oldest
-        items.sort((a,b)=>{
-          const da = parseDateMaybe(a.date);
-          const db = parseDateMaybe(b.date);
-          const ta = da ? da.getTime() : 0;
-          const tb = db ? db.getTime() : 0;
-          return ta - tb;
-        });
-        if (sort === 'newest') items.reverse();
-      }
-
-      viewItems = items;
+    // Clean mode: no search/filter/sort UI.
+    function setViewAll(){
+      viewItems = allItems.slice();
       render();
     }
 
@@ -506,8 +470,8 @@
       gridEl.innerHTML = '';
 
       if (!viewItems.length){
-        setState('Keine Treffer. Passe Suche/Filter an.', true);
-          return;
+        setState('Keine Bilder gefunden.', true);
+        return;
       }
 
       const frag = document.createDocumentFragment();
@@ -732,7 +696,6 @@
       setState('Lade images.json …', true);
       countPillEl.textContent = 'Lade…';
       gridEl.innerHTML = '';
-      hintEl.textContent = '';
 
       try{
         const res = await fetch(IMAGES_JSON_URL, { cache: 'no-store' });
@@ -747,15 +710,14 @@
 
         allItems = arr.map(normalizeItem).filter(i => i.src);
 
-        buildTagOptions(allItems);
         configureZipOption(manifest);
 
-        // Default sort: name asc
-        applyFilters();
+        // Clean mode: show everything
+        setViewAll();
 
         setState('', false);
         if (!allItems.length){
-          setState('images.json ist leer. Füge Einträge hinzu (siehe Beispiel unten in data/images.json).', true);
+          setState('Keine Bilder gefunden.', true);
         }
 
       } catch (err){
