@@ -3,41 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="dark light" />
+  <meta name="color-scheme" content="light" />
   <title>Galerie</title>
 
   <!-- Minimalist + modern: system font stack + subtle shadows -->
   <style>
     :root{
-      --bg: #0b0f17;
-      --card: rgba(255,255,255,0.06);
-      --card2: rgba(255,255,255,0.09);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.65);
-      --muted2: rgba(255,255,255,0.45);
-      --border: rgba(255,255,255,0.10);
-      --shadow: 0 10px 30px rgba(0,0,0,0.35);
-      --accent: #7c3aed; /* violet */
-      --accent2:#22c55e; /* green */
+      --bg: #ffffff;
+      --bg2: #f6f7fb;
+      --card: #ffffff;
+      --text: rgba(17,24,39,0.92);
+      --muted: rgba(17,24,39,0.62);
+      --muted2: rgba(17,24,39,0.46);
+      --border: rgba(17,24,39,0.10);
+      --shadow: 0 12px 28px rgba(17,24,39,0.10);
+      --accent: #2563eb; /* blue */
       --danger:#ef4444;
-      --ring: 0 0 0 4px rgba(124,58,237,0.25);
-      --radius: 16px;
-      --radius2: 12px;
-      --maxw: 1200px;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root{
-        --bg: #f7f7fb;
-        --card: rgba(0,0,0,0.04);
-        --card2: rgba(0,0,0,0.06);
-        --text: rgba(0,0,0,0.88);
-        --muted: rgba(0,0,0,0.60);
-        --muted2: rgba(0,0,0,0.42);
-        --border: rgba(0,0,0,0.10);
-        --shadow: 0 10px 30px rgba(0,0,0,0.10);
-        --ring: 0 0 0 4px rgba(124,58,237,0.18);
-      }
+      --ring: 0 0 0 4px rgba(37,99,235,0.18);
+      --radius: 18px;
+      --radius2: 14px;
+      --maxw: 1240px;
     }
 
     *{ box-sizing: border-box; }
@@ -46,10 +31,9 @@
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
       background:
-        radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,0.20), transparent 55%),
-        radial-gradient(900px 500px at 95% 0%, rgba(34,197,94,0.15), transparent 50%),
-        radial-gradient(900px 600px at 35% 110%, rgba(59,130,246,0.12), transparent 55%),
-        var(--bg);
+        radial-gradient(900px 500px at 10% -10%, rgba(37,99,235,0.10), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(14,165,233,0.08), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
       color: var(--text);
       line-height: 1.45;
     }
@@ -58,6 +42,34 @@
     a:focus-visible, button:focus-visible, input:focus-visible{ outline: none; box-shadow: var(--ring); border-color: rgba(124,58,237,0.55) !important; }
 
     .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 44px; }
+
+    /* Gate-only minimalist layout */
+    #page.gate-only{
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+    }
+
+    #page.gate-only header,
+    #page.gate-only #app,
+    #page.gate-only .lb{
+      display:none !important;
+    }
+
+    #page.gate-only #gate{
+      width: min(520px, 100%);
+      margin: 0 !important;
+    }
+
+    #page.gate-only #gateMsg{ display:none !important; }
+
+    .btn.success{
+      background: linear-gradient(180deg, rgba(34,197,94,0.95), rgba(34,197,94,0.78));
+      border-color: rgba(34,197,94,0.55);
+      color: white;
+    }
 
     header{
       display:flex; gap:16px; align-items:flex-start; justify-content: space-between;
@@ -73,7 +85,7 @@
       font-weight: 680;
     }
 
-    .subtitle{ font-size: 13px; color: var(--muted); margin:0; }
+    .subtitle{ display:none; }
 
     .toolbar{
       display:flex; flex-wrap: wrap; gap:10px; align-items:center; justify-content: flex-end;
@@ -111,22 +123,18 @@
     .btn:active{ transform: translateY(0px); }
 
     .btn.primary{
-      background: linear-gradient(180deg, rgba(124,58,237,0.95), rgba(124,58,237,0.70));
-      border-color: rgba(124,58,237,0.85);
+      background: linear-gradient(180deg, rgba(37,99,235,0.95), rgba(37,99,235,0.78));
+      border-color: rgba(37,99,235,0.55);
+      color: white;
     }
 
-    .btn.primary:hover{ border-color: rgba(124,58,237,1); }
+    .btn.primary:hover{ border-color: rgba(37,99,235,0.85); }
 
     .btn.ghost{ background: rgba(255,255,255,0.03); }
 
     .btn:disabled{ opacity: 0.5; cursor:not-allowed; transform:none; }
 
-    .controls{
-      display:grid;
-      grid-template-columns: 1.2fr 0.9fr 0.9fr;
-      gap: 10px;
-      margin: 14px 0 18px;
-    }
+    .controls{ display:none; }
 
     @media (max-width: 900px){
       .controls{ grid-template-columns: 1fr; }
@@ -167,13 +175,13 @@
 
     .grid{
       display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
     }
 
-    @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 850px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 560px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 780px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px){ .grid{ grid-template-columns: 1fr; } }
 
     .card{
       position: relative;
@@ -190,47 +198,20 @@
     .card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
 
     .thumb{
-      width:100%; height: 190px;
+      width:100%;
+      height: 260px;
       object-fit: cover;
       display:block;
-      background: rgba(255,255,255,0.03);
+      background: rgba(17,24,39,0.03);
     }
 
-    @media (max-width: 560px){ .thumb{ height: 160px; } }
+    @media (max-width: 780px){ .thumb{ height: 220px; } }
+    @media (max-width: 520px){ .thumb{ height: 240px; } }
 
-    .meta{
-      position:absolute; left: 10px; right: 10px; bottom: 10px;
-      display:flex; align-items:flex-end; justify-content: space-between; gap: 10px;
-      pointer-events: none;
-    }
-
-    .caption{
-      pointer-events: none;
-      max-width: 75%;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.92);
-      padding: 7px 9px;
-      border-radius: 12px;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.25);
-    }
-
-    .caption .name{ font-size: 12px; font-weight: 650; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
-    .caption .sub{ font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 2px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
-
-    .badges{ display:flex; gap:6px; pointer-events:none; }
-
-    .badge{
-      pointer-events:none;
-      font-size: 11px;
-      padding: 6px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(8px);
-      color: rgba(255,255,255,0.85);
-    }
+    .meta{ display:none; }
+    .caption{ display:none; }
+    .badges{ display:none; }
+    .badge{ display:none; }
 
     .state{
       margin-top: 18px;
@@ -304,26 +285,20 @@
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="wrap" id="page">
     <!-- Login gate (client-side) -->
-    <section id="gate" style="margin: 18px 0 18px;">
-      <div style="border:1px solid var(--border); background: rgba(255,255,255,0.05); border-radius: var(--radius); padding: 16px; box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset;">
-        <div style="display:flex; align-items:flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
-          <div style="min-width: 220px;">
-            <div style="font-weight: 680; font-size: 14px;">Zugriff geschützt</div>
-            <div style="margin-top: 4px; font-size: 12px; color: var(--muted); max-width: 62ch;">
-              Dieses Passwort ist ein <em>einfacher</em> Schutz gegen zufälligen Zugriff (clientseitig). Teile das Passwort nur mit den gewünschten Personen.
-            </div>
-          </div>
-          <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap;">
-            <div class="field" style="min-width: 280px;">
-              <label for="pw">Passwort</label>
-              <input id="pw" type="password" placeholder="Passwort eingeben" autocomplete="current-password" />
-            </div>
-            <button class="btn primary" id="unlockBtn" type="button">Freischalten</button>
-          </div>
+    <section id="gate">
+      <div style="border:1px solid var(--border); background: var(--card); border-radius: 22px; padding: 18px; box-shadow: var(--shadow);">
+        <div style="display:flex; gap: 10px; align-items: stretch;">
+          <input id="pw" type="password" aria-label="Passwort" placeholder="Passwort" autocomplete="current-password"
+                 style="flex:1; border:1px solid var(--border); background: #fff; border-radius: 16px; padding: 14px 14px; font-size: 14px; color: var(--text);" />
+          <button class="btn primary" id="unlockBtn" type="button" aria-label="Bestätigen" style="width: 56px; padding: 0;">
+            <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px;">
+              <path d="M20.285 6.709a1.35 1.35 0 0 1 0 1.91l-9.06 9.06a1.35 1.35 0 0 1-1.91 0L3.715 12.08a1.35 1.35 0 0 1 1.91-1.91l4.645 4.645 8.105-8.105a1.35 1.35 0 0 1 1.91 0Z" fill="currentColor"/>
+            </svg>
+          </button>
         </div>
-        <div id="gateMsg" style="margin-top: 10px; font-size: 12px; color: var(--muted);"></div>
+        <div id="gateMsg"></div>
       </div>
     </section>
 
@@ -331,7 +306,6 @@
       <header>
         <div class="title">
           <h1>Galerie</h1>
-          <p class="subtitle">Bilder aus <code>data/images.json</code>. Klick auf ein Bild für die große Ansicht.</p>
         </div>
         <div class="toolbar">
           <div class="pill" id="countPill">Lade…</div>
@@ -346,41 +320,13 @@
         </div>
       </header>
 
-      <section class="controls">
-        <div class="field">
-          <label for="q">Suche</label>
-          <input id="q" type="search" placeholder="Dateiname, Titel, Tags…" autocomplete="off" />
-        </div>
-
-        <div class="field">
-          <label for="sort">Sortierung</label>
-          <select id="sort">
-            <option value="name-asc">Name (A–Z)</option>
-            <option value="name-desc">Name (Z–A)</option>
-            <option value="newest">Neueste zuerst</option>
-            <option value="oldest">Älteste zuerst</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="tag">Tag</label>
-          <select id="tag">
-            <option value="">Alle</option>
-          </select>
-        </div>
-      </section>
-
-      <div class="hint" id="hint"></div>
 
       <main>
         <div id="state" class="state" style="display:none"></div>
         <div id="grid" class="grid" aria-live="polite"></div>
       </main>
 
-      <footer>
-        <div>Tipps: <span class="kbd">Esc</span> schließt · <span class="kbd">←</span>/<span class="kbd">→</span> navigiert in der Lightbox</div>
-        <div><a href="data/images.json" target="_blank" rel="noreferrer">images.json öffnen</a></div>
-      </footer>
+      <footer style="display:none"></footer>
     </div>
   </div>
 
@@ -453,10 +399,6 @@
 
     const gridEl = document.getElementById('grid');
     const stateEl = document.getElementById('state');
-    const qEl = document.getElementById('q');
-    const sortEl = document.getElementById('sort');
-    const tagEl = document.getElementById('tag');
-    const hintEl = document.getElementById('hint');
     const countPillEl = document.getElementById('countPill');
     const reloadBtn = document.getElementById('reloadBtn');
     const zipLink = document.getElementById('zipLink');
@@ -565,11 +507,8 @@
 
       if (!viewItems.length){
         setState('Keine Treffer. Passe Suche/Filter an.', true);
-        hintEl.textContent = '';
-        return;
+          return;
       }
-
-      hintEl.textContent = 'Tipp: Du kannst nach Titel/Dateiname/Tags suchen. In der Lightbox sind Downloads pro Bild verfügbar.';
 
       const frag = document.createDocumentFragment();
       for (let idx=0; idx<viewItems.length; idx++){
@@ -732,21 +671,34 @@
 
     // ----- Gate -----
     function setGateMsg(text, isError=false){
+      // Gate is intentionally minimal: keep messages visually hidden.
       gateMsgEl.textContent = text || '';
       gateMsgEl.style.color = isError ? 'var(--danger)' : 'var(--muted)';
     }
 
-    function unlock(){
+    async function unlock(){
       const entered = String(pwEl.value || '');
-      if (entered !== GALLERY_PASSWORD){
-        setGateMsg('Falsches Passwort. Bitte erneut versuchen.', true);
+      const ok = entered === GALLERY_PASSWORD;
+
+      if (!ok){
+        // no visible text; just a quick shake-ish feedback via focus ring
         pwEl.focus();
         pwEl.select();
+        unlockBtn.classList.remove('success');
+        unlockBtn.classList.add('primary');
         return;
       }
-      setGateMsg('');
+
+      // turn button green briefly, then open app
+      unlockBtn.classList.remove('primary');
+      unlockBtn.classList.add('success');
+      unlockBtn.disabled = true;
+
+      await new Promise(r => setTimeout(r, 220));
+
       gateEl.style.display = 'none';
       appEl.style.display = '';
+      document.getElementById('page')?.classList.remove('gate-only');
       load();
     }
 
@@ -756,10 +708,6 @@
     });
 
     // ----- Events -----
-    qEl.addEventListener('input', () => applyFilters());
-    sortEl.addEventListener('change', () => applyFilters());
-    tagEl.addEventListener('change', () => applyFilters());
-
     reloadBtn.addEventListener('click', async ()=>{
       await load();
     });
@@ -816,8 +764,9 @@
       }
     }
 
-    // Start locked; user must unlock first.
-    setGateMsg('Bitte Passwort eingeben, um die Galerie zu laden.');
+    // Start locked; fully minimal gate-only view.
+    document.getElementById('page')?.classList.add('gate-only');
+    setGateMsg('');
     appEl.style.display = 'none';
 
   </script>
