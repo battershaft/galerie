@@ -19,6 +19,15 @@ function listFiles(dir) {
     .map((d) => d.name);
 }
 
+function looksLikeImage(name) {
+  const ext = path.extname(name).toLowerCase();
+  if (!exts.has(ext)) return false;
+  // avoid accidentally indexing common repo/social images if present
+  const lower = name.toLowerCase();
+  if (lower === "favicon.ico") return false;
+  return true;
+}
+
 function hasThumb(fileName) {
   return fs.existsSync(path.join(THUMBS_DIR, fileName));
 }
@@ -38,9 +47,15 @@ function main() {
   const useDir = fs.existsSync(IMAGES_DIR) ? IMAGES_DIR : ROOT_FALLBACK_DIR;
 
   const files = listFiles(useDir)
-    .filter((f) => exts.has(path.extname(f).toLowerCase()))
-    // avoid accidentally indexing repo files like README images? still only image extensions.
+    .filter((f) => looksLikeImage(f))
     .sort(naturalSort);
+
+  console.log(`Using directory: ${useDir}`);
+  console.log(`Found ${files.length} image files.`);
+  if (useDir === ".") {
+    // Helpful debug if root fallback is used
+    console.log("Root files (first 50):", listFiles(".").slice(0, 50));
+  }
 
   const images = files.map((f) => {
     const src = useDir === "." ? f : `${useDir}/${f}`;
