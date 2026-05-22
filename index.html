@@ -270,6 +270,27 @@
       background: rgba(255,255,255,0.65);
     }
 
+    /* Mobile lightbox layout: title on top, buttons below image */
+    @media (max-width: 640px){
+      .lb{ padding: 14px; }
+      .lb-inner{ max-height: 92vh; }
+      .lb-top{ padding: 10px 10px; }
+      .lb-actions{ display:none; }
+      .lb-title .name{ font-size: 13px; }
+      .lb-title .sub{ display:none; }
+      .lb-img{ max-height: 62vh; }
+      .lb-bottom{
+        display:flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 10px;
+        border-top: 1px solid var(--border);
+        background: rgba(255,255,255,0.65);
+      }
+      .lb-bottom .btn{ flex: 1 1 auto; justify-content:center; }
+    }
+
     .lb-title{ display:flex; flex-direction: column; min-width: 0; }
     .lb-title .name{ font-size: 13px; font-weight: 680; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
     .lb-title .sub{ font-size: 12px; color: var(--muted); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
@@ -399,6 +420,16 @@
       <div class="lb-img-wrap">
         <img id="lbImg" class="lb-img" alt="" />
       </div>
+
+      <div class="lb-bottom" style="display:none" id="lbBottom">
+        <a class="btn" id="lbDownload2" href="#" download>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4.01 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.42-1.41L11 11.6V3a1 1 0 0 1 1-1ZM5 20a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
+          Download
+        </a>
+        <button class="btn ghost" id="lbPrev2" type="button">Zurück</button>
+        <button class="btn ghost" id="lbNext2" type="button">Weiter</button>
+        <button class="btn" id="lbClose2" type="button">Schließen</button>
+      </div>
     </div>
   </div>
 
@@ -443,6 +474,13 @@
     const lbClose = document.getElementById('lbClose');
     const lbPrev = document.getElementById('lbPrev');
     const lbNext = document.getElementById('lbNext');
+
+    // Mobile bottom bar
+    const lbBottom = document.getElementById('lbBottom');
+    const lbDownload2 = document.getElementById('lbDownload2');
+    const lbClose2 = document.getElementById('lbClose2');
+    const lbPrev2 = document.getElementById('lbPrev2');
+    const lbNext2 = document.getElementById('lbNext2');
 
     // ----- Helpers -----
     const esc = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -580,6 +618,15 @@
 
       lbDownload.href = it.src;
       lbDownload.setAttribute('download', fileNameFromPath(it.src));
+      if (lbDownload2){
+        lbDownload2.href = it.src;
+        lbDownload2.setAttribute('download', fileNameFromPath(it.src));
+      }
+
+      // show mobile bottom bar only on small screens (CSS handles layout)
+      if (lbBottom){
+        lbBottom.style.display = '';
+      }
     }
 
     function closeLightbox(){
@@ -587,6 +634,7 @@
       document.documentElement.style.overflow = '';
       // clear image to stop download in some browsers
       lbImg.src = '';
+      if (lbBottom) lbBottom.style.display = 'none';
       activeIndex = -1;
     }
 
@@ -739,6 +787,10 @@
     lbClose.addEventListener('click', closeLightbox);
     lbPrev.addEventListener('click', ()=> stepLightbox(-1));
     lbNext.addEventListener('click', ()=> stepLightbox(1));
+
+    if (lbClose2) lbClose2.addEventListener('click', closeLightbox);
+    if (lbPrev2) lbPrev2.addEventListener('click', ()=> stepLightbox(-1));
+    if (lbNext2) lbNext2.addEventListener('click', ()=> stepLightbox(1));
 
     lb.addEventListener('click', (e)=>{
       if (e.target === lb) closeLightbox();
