@@ -270,6 +270,8 @@
       background: rgba(255,255,255,0.65);
     }
 
+    .lb-bottom{ display:none; }
+
     /* Mobile lightbox layout: title on top, buttons below image */
     @media (max-width: 640px){
       .lb{ padding: 14px; }
@@ -421,7 +423,7 @@
         <img id="lbImg" class="lb-img" alt="" />
       </div>
 
-      <div class="lb-bottom" style="display:none" id="lbBottom">
+      <div class="lb-bottom" style="display:none" id="lbBottom" aria-label="Aktionen">
         <a class="btn" id="lbDownload2" href="#" download>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4.01 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.42-1.41L11 11.6V3a1 1 0 0 1 1-1ZM5 20a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
           Download
@@ -623,7 +625,7 @@
         lbDownload2.setAttribute('download', fileNameFromPath(it.src));
       }
 
-      // show mobile bottom bar only on small screens (CSS handles layout)
+      // bottom bar is mobile-only via CSS; keep DOM default hidden otherwise
       if (lbBottom){
         lbBottom.style.display = '';
       }
