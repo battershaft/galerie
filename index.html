@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Galerie</title>
+
+  <!-- Minimalist + modern: system font stack + subtle shadows -->
+  <style>
+    :root{
+      --bg: #0b0f17;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --muted2: rgba(255,255,255,0.45);
+      --border: rgba(255,255,255,0.10);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --accent: #7c3aed; /* violet */
+      --accent2:#22c55e; /* green */
+      --danger:#ef4444;
+      --ring: 0 0 0 4px rgba(124,58,237,0.25);
+      --radius: 16px;
+      --radius2: 12px;
+      --maxw: 1200px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root{
+        --bg: #f7f7fb;
+        --card: rgba(0,0,0,0.04);
+        --card2: rgba(0,0,0,0.06);
+        --text: rgba(0,0,0,0.88);
+        --muted: rgba(0,0,0,0.60);
+        --muted2: rgba(0,0,0,0.42);
+        --border: rgba(0,0,0,0.10);
+        --shadow: 0 10px 30px rgba(0,0,0,0.10);
+        --ring: 0 0 0 4px rgba(124,58,237,0.18);
+      }
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(124,58,237,0.20), transparent 55%),
+        radial-gradient(900px 500px at 95% 0%, rgba(34,197,94,0.15), transparent 50%),
+        radial-gradient(900px 600px at 35% 110%, rgba(59,130,246,0.12), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible, input:focus-visible{ outline: none; box-shadow: var(--ring); border-color: rgba(124,58,237,0.55) !important; }
+
+    .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 44px; }
+
+    header{
+      display:flex; gap:16px; align-items:flex-start; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      display:flex; flex-direction: column; gap: 6px;
+    }
+
+    h1{
+      font-size: 20px; letter-spacing: 0.2px; margin:0;
+      font-weight: 680;
+    }
+
+    .subtitle{ font-size: 13px; color: var(--muted); margin:0; }
+
+    .toolbar{
+      display:flex; flex-wrap: wrap; gap:10px; align-items:center; justify-content: flex-end;
+    }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+      color: var(--text);
+      font-size: 13px;
+      user-select: none;
+    }
+
+    .pill strong{ font-weight: 650; }
+
+    .btn{
+      cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 13px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); }
+    .btn:active{ transform: translateY(0px); }
+
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(124,58,237,0.95), rgba(124,58,237,0.70));
+      border-color: rgba(124,58,237,0.85);
+    }
+
+    .btn.primary:hover{ border-color: rgba(124,58,237,1); }
+
+    .btn.ghost{ background: rgba(255,255,255,0.03); }
+
+    .btn:disabled{ opacity: 0.5; cursor:not-allowed; transform:none; }
+
+    .controls{
+      display:grid;
+      grid-template-columns: 1.2fr 0.9fr 0.9fr;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    @media (max-width: 900px){
+      .controls{ grid-template-columns: 1fr; }
+      header{ flex-direction: column; align-items: stretch; }
+      .toolbar{ justify-content: flex-start; }
+    }
+
+    .field{
+      display:flex; align-items:center; gap:10px;
+      padding: 10px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .field label{ font-size: 12px; color: var(--muted2); min-width: 74px; }
+
+    input[type="search"]{
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    select{
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      appearance: none;
+    }
+
+    .hint{ font-size: 12px; color: var(--muted); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 850px){ .grid{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+
+    .card{
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+      cursor: zoom-in;
+      min-height: 140px;
+    }
+
+    .card:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
+
+    .thumb{
+      width:100%; height: 190px;
+      object-fit: cover;
+      display:block;
+      background: rgba(255,255,255,0.03);
+    }
+
+    @media (max-width: 560px){ .thumb{ height: 160px; } }
+
+    .meta{
+      position:absolute; left: 10px; right: 10px; bottom: 10px;
+      display:flex; align-items:flex-end; justify-content: space-between; gap: 10px;
+      pointer-events: none;
+    }
+
+    .caption{
+      pointer-events: none;
+      max-width: 75%;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.92);
+      padding: 7px 9px;
+      border-radius: 12px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.25);
+    }
+
+    .caption .name{ font-size: 12px; font-weight: 650; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .caption .sub{ font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 2px; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+
+    .badges{ display:flex; gap:6px; pointer-events:none; }
+
+    .badge{
+      pointer-events:none;
+      font-size: 11px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.85);
+    }
+
+    .state{
+      margin-top: 18px;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      padding: 18px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Lightbox */
+    .lb{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72);
+      display:none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .lb.open{ display:flex; }
+
+    .lb-inner{
+      width: min(1100px, 100%);
+      max-height: min(85vh, 900px);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(10,14,22,0.75);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .lb-top{
+      display:flex; align-items:center; justify-content: space-between; gap: 10px;
+      padding: 12px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .lb-title{ display:flex; flex-direction: column; min-width: 0; }
+    .lb-title .name{ font-size: 13px; font-weight: 650; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .lb-title .sub{ font-size: 12px; color: rgba(255,255,255,0.65); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+
+    .lb-actions{ display:flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .lb-img-wrap{ display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.25); }
+    .lb-img{
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      display:block;
+      background: transparent;
+    }
+
+    .kbd{ font-size: 11px; color: rgba(255,255,255,0.65); padding-left: 8px; }
+
+    /* Footer */
+    footer{ margin-top: 24px; display:flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 12px; }
+    footer a{ text-decoration: underline; text-underline-offset: 3px; color: var(--muted); }
+
+    /* Small icons (inline SVG) */
+    .ico{ width: 16px; height: 16px; display:inline-block; }
+    .ico path{ fill: currentColor; }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .btn, .card{ transition: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- Login gate (client-side) -->
+    <section id="gate" style="margin: 18px 0 18px;">
+      <div style="border:1px solid var(--border); background: rgba(255,255,255,0.05); border-radius: var(--radius); padding: 16px; box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset;">
+        <div style="display:flex; align-items:flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+          <div style="min-width: 220px;">
+            <div style="font-weight: 680; font-size: 14px;">Zugriff geschützt</div>
+            <div style="margin-top: 4px; font-size: 12px; color: var(--muted); max-width: 62ch;">
+              Dieses Passwort ist ein <em>einfacher</em> Schutz gegen zufälligen Zugriff (clientseitig). Teile das Passwort nur mit den gewünschten Personen.
+            </div>
+          </div>
+          <div style="display:flex; gap: 10px; align-items:center; flex-wrap: wrap;">
+            <div class="field" style="min-width: 280px;">
+              <label for="pw">Passwort</label>
+              <input id="pw" type="password" placeholder="Passwort eingeben" autocomplete="current-password" />
+            </div>
+            <button class="btn primary" id="unlockBtn" type="button">Freischalten</button>
+          </div>
+        </div>
+        <div id="gateMsg" style="margin-top: 10px; font-size: 12px; color: var(--muted);"></div>
+      </div>
+    </section>
+
+    <div id="app" style="display:none">
+      <header>
+        <div class="title">
+          <h1>Galerie</h1>
+          <p class="subtitle">Bilder aus <code>data/images.json</code>. Klick auf ein Bild für die große Ansicht.</p>
+        </div>
+        <div class="toolbar">
+          <div class="pill" id="countPill">Lade…</div>
+          <a class="btn ghost" id="zipLink" href="#" aria-disabled="true" title="ZIP-Datei (optional)" >
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4.01 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.42-1.41L11 11.6V3a1 1 0 0 1 1-1ZM5 20a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
+            Alle als ZIP
+          </a>
+          <button class="btn primary" id="reloadBtn" type="button">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 0 1-8.66 3.54 1 1 0 1 0-1.5 1.32A7 7 0 0 0 19 13c0-3.87-3.13-7-7-7Z"/></svg>
+            Neu laden
+          </button>
+        </div>
+      </header>
+
+      <section class="controls">
+        <div class="field">
+          <label for="q">Suche</label>
+          <input id="q" type="search" placeholder="Dateiname, Titel, Tags…" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="sort">Sortierung</label>
+          <select id="sort">
+            <option value="name-asc">Name (A–Z)</option>
+            <option value="name-desc">Name (Z–A)</option>
+            <option value="newest">Neueste zuerst</option>
+            <option value="oldest">Älteste zuerst</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="tag">Tag</label>
+          <select id="tag">
+            <option value="">Alle</option>
+          </select>
+        </div>
+      </section>
+
+      <div class="hint" id="hint"></div>
+
+      <main>
+        <div id="state" class="state" style="display:none"></div>
+        <div id="grid" class="grid" aria-live="polite"></div>
+      </main>
+
+      <footer>
+        <div>Tipps: <span class="kbd">Esc</span> schließt · <span class="kbd">←</span>/<span class="kbd">→</span> navigiert in der Lightbox</div>
+        <div><a href="data/images.json" target="_blank" rel="noreferrer">images.json öffnen</a></div>
+      </footer>
+    </div>
+  </div>
+
+  <!--
+    Repo structure expected:
+      - index.html
+      - assets/images/            (originals)
+      - assets/thumbs/            (optional; same filenames as originals)
+      - data/images.json          (auto-generated by GitHub Action)
+      - tools/generate-images-json.mjs
+      - .github/workflows/build-images-json.yml
+  -->
+
+  <!-- Lightbox -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bildansicht">
+    <div class="lb-inner">
+      <div class="lb-top">
+        <div class="lb-title">
+          <div class="name" id="lbName">—</div>
+          <div class="sub" id="lbSub">—</div>
+        </div>
+        <div class="lb-actions">
+          <a class="btn" id="lbDownload" href="#" download>
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4.01 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.42-1.41L11 11.6V3a1 1 0 0 1 1-1ZM5 20a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
+            Download
+          </a>
+          <button class="btn ghost" id="lbPrev" type="button" title="Vorheriges (←)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 6.3a1 1 0 0 1 0 1.4L11.41 12l4.3 4.3a1 1 0 1 1-1.41 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0Z"/></svg>
+            Zurück
+          </button>
+          <button class="btn ghost" id="lbNext" type="button" title="Nächstes (→)">
+            Weiter
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 17.7a1 1 0 0 1 0-1.4L12.59 12 8.3 7.7a1 1 0 1 1 1.41-1.4l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4 0Z"/></svg>
+          </button>
+          <button class="btn" id="lbClose" type="button" title="Schließen (Esc)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.3 6.3a1 1 0 0 1 1.4 0L12 10.6l4.3-4.3a1 1 0 1 1 1.4 1.4L13.4 12l4.3 4.3a1 1 0 1 1-1.4 1.4L12 13.4l-4.3 4.3a1 1 0 1 1-1.4-1.4L10.6 12 6.3 7.7a1 1 0 0 1 0-1.4Z"/></svg>
+            Schließen
+          </button>
+        </div>
+      </div>
+      <div class="lb-img-wrap">
+        <img id="lbImg" class="lb-img" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <!-- JSZip (for optional on-the-fly ZIP build) -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script>
+    // ----- Config -----
+    // If you prefer a pre-built ZIP file in the repo, set zipFile to e.g. "downloads/images.zip" in images.json.
+    const IMAGES_JSON_URL = "data/images.json";
+
+    // Simple client-side password gate (NOT high security).
+    // Anyone who can view page source can technically extract this.
+    const GALLERY_PASSWORD = "Bilder123";
+
+    // ----- State -----
+    let allItems = [];
+    let viewItems = [];
+    let activeIndex = -1;
+
+    // ----- Elements -----
+    const gateEl = document.getElementById('gate');
+    const gateMsgEl = document.getElementById('gateMsg');
+    const pwEl = document.getElementById('pw');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const appEl = document.getElementById('app');
+
+    const gridEl = document.getElementById('grid');
+    const stateEl = document.getElementById('state');
+    const qEl = document.getElementById('q');
+    const sortEl = document.getElementById('sort');
+    const tagEl = document.getElementById('tag');
+    const hintEl = document.getElementById('hint');
+    const countPillEl = document.getElementById('countPill');
+    const reloadBtn = document.getElementById('reloadBtn');
+    const zipLink = document.getElementById('zipLink');
+
+    // Lightbox
+    const lb = document.getElementById('lb');
+    const lbImg = document.getElementById('lbImg');
+    const lbName = document.getElementById('lbName');
+    const lbSub = document.getElementById('lbSub');
+    const lbDownload = document.getElementById('lbDownload');
+    const lbClose = document.getElementById('lbClose');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+
+    // ----- Helpers -----
+    const esc = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    function fileNameFromPath(p){
+      try{
+        const clean = String(p || '').split('?')[0].split('#')[0];
+        const parts = clean.split('/');
+        return parts[parts.length-1] || clean;
+      } catch { return 'image'; }
+    }
+
+    function normalizeItem(raw){
+      // Accept either: string or object
+      if (typeof raw === 'string') {
+        return { src: raw, title: fileNameFromPath(raw), tags: [] };
+      }
+      const src = raw.src || raw.url || '';
+      const title = raw.title || raw.name || fileNameFromPath(src);
+      const tags = Array.isArray(raw.tags) ? raw.tags : (raw.tags ? [String(raw.tags)] : []);
+      const date = raw.date || raw.created || raw.taken || '';
+      const description = raw.description || '';
+      const thumb = raw.thumb || raw.thumbnail || '';
+      return { src, title, tags, date, description, thumb };
+    }
+
+    function parseDateMaybe(v){
+      if (!v) return null;
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function unique(arr){ return [...new Set(arr)]; }
+
+    function setState(msg, show=true){
+      stateEl.style.display = show ? 'block' : 'none';
+      stateEl.textContent = msg || '';
+    }
+
+    function setCountPill(){
+      const total = allItems.length;
+      const shown = viewItems.length;
+      const label = shown === total ? `${total} Bilder` : `${shown} von ${total} Bildern`;
+      countPillEl.innerHTML = `<strong>${esc(label)}</strong>`;
+    }
+
+    function buildTagOptions(items){
+      const tags = unique(items.flatMap(i => i.tags || []).map(t => String(t).trim()).filter(Boolean)).sort((a,b)=>a.localeCompare(b,'de'));
+      tagEl.innerHTML = '<option value="">Alle</option>' + tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    }
+
+    function applyFilters(){
+      const q = (qEl.value || '').trim().toLowerCase();
+      const tag = tagEl.value || '';
+
+      let items = allItems.slice();
+
+      if (tag){
+        items = items.filter(i => (i.tags || []).includes(tag));
+      }
+
+      if (q){
+        items = items.filter(i => {
+          const hay = [i.title, i.src, i.description, ...(i.tags||[])].join(' ').toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      const sort = sortEl.value;
+      if (sort === 'name-asc' || sort === 'name-desc'){
+        items.sort((a,b)=> (a.title||'').localeCompare((b.title||''),'de', {numeric:true, sensitivity:'base'}));
+        if (sort === 'name-desc') items.reverse();
+      } else {
+        // newest/oldest
+        items.sort((a,b)=>{
+          const da = parseDateMaybe(a.date);
+          const db = parseDateMaybe(b.date);
+          const ta = da ? da.getTime() : 0;
+          const tb = db ? db.getTime() : 0;
+          return ta - tb;
+        });
+        if (sort === 'newest') items.reverse();
+      }
+
+      viewItems = items;
+      render();
+    }
+
+    function render(){
+      setCountPill();
+      setState('', false);
+      gridEl.innerHTML = '';
+
+      if (!viewItems.length){
+        setState('Keine Treffer. Passe Suche/Filter an.', true);
+        hintEl.textContent = '';
+        return;
+      }
+
+      hintEl.textContent = 'Tipp: Du kannst nach Titel/Dateiname/Tags suchen. In der Lightbox sind Downloads pro Bild verfügbar.';
+
+      const frag = document.createDocumentFragment();
+      for (let idx=0; idx<viewItems.length; idx++){
+        const it = viewItems[idx];
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.tabIndex = 0;
+        card.setAttribute('role','button');
+        card.setAttribute('aria-label', `Bild öffnen: ${it.title}`);
+
+        const img = document.createElement('img');
+        img.className = 'thumb';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.src = it.thumb || it.src;
+        img.alt = it.title || '';
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const cap = document.createElement('div');
+        cap.className = 'caption';
+        const sub = [it.tags && it.tags.length ? it.tags.slice(0,2).join(' · ') : '', it.date ? String(it.date) : ''].filter(Boolean).join(' · ');
+        cap.innerHTML = `<div class="name">${esc(it.title || fileNameFromPath(it.src))}</div><div class="sub">${esc(sub || fileNameFromPath(it.src))}</div>`;
+
+        const badges = document.createElement('div');
+        badges.className = 'badges';
+        if (it.tags && it.tags.length){
+          badges.appendChild(makeBadge(it.tags.length === 1 ? it.tags[0] : `${it.tags.length} Tags`));
+        }
+
+        meta.appendChild(cap);
+        meta.appendChild(badges);
+
+        card.appendChild(img);
+        card.appendChild(meta);
+
+        card.addEventListener('click', ()=> openLightbox(idx));
+        card.addEventListener('keydown', (e)=>{
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openLightbox(idx);
+          }
+        });
+
+        frag.appendChild(card);
+      }
+      gridEl.appendChild(frag);
+    }
+
+    function makeBadge(txt){
+      const b = document.createElement('div');
+      b.className = 'badge';
+      b.textContent = txt;
+      return b;
+    }
+
+    function openLightbox(viewIdx){
+      activeIndex = viewIdx;
+      const it = viewItems[activeIndex];
+      if (!it) return;
+
+      lb.classList.add('open');
+      // prevent background scroll
+      document.documentElement.style.overflow = 'hidden';
+
+      lbImg.src = it.src;
+      lbImg.alt = it.title || '';
+
+      const tags = (it.tags && it.tags.length) ? it.tags.join(', ') : '—';
+      const date = it.date ? String(it.date) : '';
+      lbName.textContent = it.title || fileNameFromPath(it.src);
+      lbSub.textContent = [tags, date].filter(Boolean).join(' · ') || fileNameFromPath(it.src);
+
+      lbDownload.href = it.src;
+      lbDownload.setAttribute('download', fileNameFromPath(it.src));
+    }
+
+    function closeLightbox(){
+      lb.classList.remove('open');
+      document.documentElement.style.overflow = '';
+      // clear image to stop download in some browsers
+      lbImg.src = '';
+      activeIndex = -1;
+    }
+
+    function stepLightbox(delta){
+      if (activeIndex < 0) return;
+      const next = activeIndex + delta;
+      if (next < 0 || next >= viewItems.length) return;
+      openLightbox(next);
+    }
+
+    // ZIP handling
+    async function buildZipOnTheFly(){
+      // Warning: this downloads all images in the browser. Works for moderate sizes.
+      const btn = zipLink;
+      btn.textContent = 'ZIP wird erstellt…';
+      btn.classList.add('primary');
+      btn.setAttribute('aria-disabled','true');
+      btn.style.pointerEvents = 'none';
+
+      try{
+        const zip = new JSZip();
+        const folder = zip.folder('images');
+        const items = allItems.slice();
+
+        // Simple throttling: sequential fetch avoids spiking memory/network.
+        for (let i=0; i<items.length; i++){
+          const it = items[i];
+          const res = await fetch(it.src);
+          if (!res.ok) throw new Error(`Konnte Datei nicht laden: ${it.src}`);
+          const blob = await res.blob();
+          folder.file(fileNameFromPath(it.src), blob);
+          btn.textContent = `ZIP: ${i+1}/${items.length}…`;
+        }
+
+        const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+        const url = URL.createObjectURL(zipBlob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'images.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        setTimeout(()=> URL.revokeObjectURL(url), 15_000);
+
+        btn.textContent = 'Alle als ZIP';
+      } finally {
+        btn.classList.remove('primary');
+        btn.setAttribute('aria-disabled','false');
+        btn.style.pointerEvents = '';
+      }
+    }
+
+    function configureZipOption(manifest){
+      // If manifest provides a ready-made zip file, use it as simple link.
+      const zipFile = manifest && (manifest.zipFile || manifest.zip || manifest.downloadZip);
+      if (zipFile){
+        zipLink.href = zipFile;
+        zipLink.setAttribute('download', fileNameFromPath(zipFile));
+        zipLink.setAttribute('aria-disabled','false');
+        zipLink.style.pointerEvents = '';
+        zipLink.addEventListener('click', (e)=>{
+          // normal navigation/download
+        }, { once: true });
+      } else {
+        // On-the-fly zip build
+        zipLink.href = '#';
+        zipLink.setAttribute('aria-disabled','false');
+        zipLink.style.pointerEvents = '';
+        zipLink.addEventListener('click', async (e)=>{
+          e.preventDefault();
+          await buildZipOnTheFly();
+        }, { once: false });
+      }
+    }
+
+    // ----- Gate -----
+    function setGateMsg(text, isError=false){
+      gateMsgEl.textContent = text || '';
+      gateMsgEl.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+    }
+
+    function unlock(){
+      const entered = String(pwEl.value || '');
+      if (entered !== GALLERY_PASSWORD){
+        setGateMsg('Falsches Passwort. Bitte erneut versuchen.', true);
+        pwEl.focus();
+        pwEl.select();
+        return;
+      }
+      setGateMsg('');
+      gateEl.style.display = 'none';
+      appEl.style.display = '';
+      load();
+    }
+
+    unlockBtn.addEventListener('click', unlock);
+    pwEl.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') unlock();
+    });
+
+    // ----- Events -----
+    qEl.addEventListener('input', () => applyFilters());
+    sortEl.addEventListener('change', () => applyFilters());
+    tagEl.addEventListener('change', () => applyFilters());
+
+    reloadBtn.addEventListener('click', async ()=>{
+      await load();
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', ()=> stepLightbox(-1));
+    lbNext.addEventListener('click', ()=> stepLightbox(1));
+
+    lb.addEventListener('click', (e)=>{
+      if (e.target === lb) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+      if (e.key === 'ArrowRight') stepLightbox(1);
+    });
+
+    // ----- Data load -----
+    async function load(){
+      setState('Lade images.json …', true);
+      countPillEl.textContent = 'Lade…';
+      gridEl.innerHTML = '';
+      hintEl.textContent = '';
+
+      try{
+        const res = await fetch(IMAGES_JSON_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Konnte ${IMAGES_JSON_URL} nicht laden (HTTP ${res.status}).`);
+        const manifest = await res.json();
+
+        // Allow two formats:
+        // 1) Array directly
+        // 2) { images: [...], zipFile: "downloads/images.zip" }
+        const arr = Array.isArray(manifest) ? manifest : (manifest.images || []);
+        if (!Array.isArray(arr)) throw new Error('images.json hat ein unerwartetes Format. Erwartet: Array oder { images: [...] }.');
+
+        allItems = arr.map(normalizeItem).filter(i => i.src);
+
+        buildTagOptions(allItems);
+        configureZipOption(manifest);
+
+        // Default sort: name asc
+        applyFilters();
+
+        setState('', false);
+        if (!allItems.length){
+          setState('images.json ist leer. Füge Einträge hinzu (siehe Beispiel unten in data/images.json).', true);
+        }
+
+      } catch (err){
+        setState(String(err?.message || err), true);
+        console.error(err);
+      }
+    }
+
+    // Start locked; user must unlock first.
+    setGateMsg('Bitte Passwort eingeben, um die Galerie zu laden.');
+    appEl.style.display = 'none';
+
+  </script>
+</body>
+</html>
