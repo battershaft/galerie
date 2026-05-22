@@ -277,7 +277,10 @@
       .lb{ padding: 14px; }
       .lb-inner{ max-height: 92vh; }
       .lb-top{ padding: 10px 10px; }
-      .lb-actions{ display:none; }
+
+      /* Force-hide the top action buttons on mobile */
+      .lb-actions{ display:none !important; }
+
       .lb-title .name{ font-size: 13px; }
       .lb-title .sub{ display:none; }
       .lb-img{ max-height: 62vh; }
