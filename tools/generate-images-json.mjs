@@ -1,8 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const IMAGES_DIR = "assets/images";
+const IMAGES_DIR = "assets/images"; // preferred
 const THUMBS_DIR = "assets/thumbs"; // optional
+
+// Fallback: if images were uploaded into repo root, use that.
+// (We still only pick image extensions.)
+const ROOT_FALLBACK_DIR = ".";
 const OUT_FILE = "data/images.json";
 
 const exts = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
@@ -29,22 +33,21 @@ function naturalSort(a, b) {
 }
 
 function main() {
-  if (!fs.existsSync(IMAGES_DIR)) {
-    console.error(`Missing folder: ${IMAGES_DIR}`);
-    process.exit(1);
-  }
+  const useDir = fs.existsSync(IMAGES_DIR) ? IMAGES_DIR : ROOT_FALLBACK_DIR;
 
-  const files = listFiles(IMAGES_DIR)
+  const files = listFiles(useDir)
     .filter((f) => exts.has(path.extname(f).toLowerCase()))
+    // avoid accidentally indexing repo files like README images? still only image extensions.
     .sort(naturalSort);
 
   const images = files.map((f) => {
+    const src = useDir === "." ? f : `${useDir}/${f}`;
     const item = {
-      src: `${IMAGES_DIR}/${f}`,
+      src,
       title: baseTitle(f),
       tags: [],
     };
-    if (hasThumb(f)) {
+    if (useDir !== "." && hasThumb(f)) {
       item.thumb = `${THUMBS_DIR}/${f}`;
     }
     return item;
