@@ -44,7 +44,13 @@ function naturalSort(a, b) {
 function main() {
   // Allow either assets/images (preferred) OR repo root fallback.
   // This keeps the workflow working even if images were uploaded into the root.
-  const useDir = fs.existsSync(IMAGES_DIR) ? IMAGES_DIR : ROOT_FALLBACK_DIR;
+  // Prefer assets/images ONLY if it contains at least one supported image.
+  // Otherwise fall back to repo root (common when users upload images into root via Web UI).
+  let useDir = ROOT_FALLBACK_DIR;
+  if (fs.existsSync(IMAGES_DIR)) {
+    const inAssets = listFiles(IMAGES_DIR).filter((f) => looksLikeImage(f));
+    if (inAssets.length > 0) useDir = IMAGES_DIR;
+  }
 
   const files = listFiles(useDir)
     .filter((f) => looksLikeImage(f))
