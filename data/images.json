@@ -1,1 +1,23 @@
+{
+  "images": [
+    {
+      "src": "assets/images/001.jpg",
+      "title": "Beispielbild 001",
+      "tags": ["demo", "portrait"],
+      "date": "2026-05-22"
+    },
+    {
+      "src": "assets/images/002.jpg",
+      "title": "Beispielbild 002",
+      "tags": ["demo", "landscape"],
+      "date": "2026-05-21"
+    },
+    {
+      "src": "assets/images/003.png",
+      "title": "Beispielbild 003",
+      "tags": ["demo"],
+      "date": "2026-05-20"
+    }
+  ]
+}
 
