@@ -278,9 +278,22 @@
       .lb-inner{ max-height: 92vh; }
       .lb-top{ padding: 10px 10px; }
 
-      /* Force-hide the top action buttons on mobile */
-      .lb-actions{ display:none !important; }
+      /* Force-hide the top action buttons on mobile (and their children) */
+      .lb-top > .lb-actions,
+      .lb-top .lb-actions,
+      .lb-top > .lb-actions *{
+        display:none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
 
+      .lb-title{ flex: 1 1 auto; }
       .lb-title .name{ font-size: 13px; }
       .lb-title .sub{ display:none; }
       .lb-img{ max-height: 62vh; }
