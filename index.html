@@ -71,6 +71,16 @@
       color: white;
     }
 
+    .btn.danger{
+      background: linear-gradient(180deg, rgba(239,68,68,0.95), rgba(239,68,68,0.78));
+      border-color: rgba(239,68,68,0.55);
+      color: white;
+    }
+
+    /* Placeholder coloring */
+    input::placeholder{ color: rgba(17,24,39,0.45); }
+    input.error::placeholder{ color: rgb(239,68,68); }
+
     header{
       display:flex; gap:16px; align-items:flex-start; justify-content: space-between;
       margin-bottom: 18px;
@@ -119,8 +129,13 @@
       white-space: nowrap;
     }
 
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.09); border-color: rgba(17,24,39,0.16); }
     .btn:active{ transform: translateY(0px); }
+
+    /* Keep semantic buttons stable on hover */
+    .btn.primary:hover{ background: linear-gradient(180deg, rgba(37,99,235,0.95), rgba(37,99,235,0.78)); border-color: rgba(37,99,235,0.85); }
+    .btn.success:hover{ background: linear-gradient(180deg, rgba(34,197,94,0.95), rgba(34,197,94,0.78)); border-color: rgba(34,197,94,0.75); }
+    .btn.danger:hover{ background: linear-gradient(180deg, rgba(239,68,68,0.95), rgba(239,68,68,0.78)); border-color: rgba(239,68,68,0.75); }
 
     .btn.primary{
       background: linear-gradient(180deg, rgba(37,99,235,0.95), rgba(37,99,235,0.78));
@@ -298,11 +313,18 @@
       <div style="border:1px solid var(--border); background: var(--card); border-radius: 22px; padding: 18px; box-shadow: var(--shadow);">
         <div style="display:flex; gap: 10px; align-items: stretch;">
           <input id="pw" type="password" aria-label="Passwort" placeholder="Passwort" autocomplete="current-password"
-                 style="flex:1; border:1px solid var(--border); background: #fff; border-radius: 16px; padding: 14px 14px; font-size: 14px; color: var(--text);" />
+                 style="flex:1; border:1px solid var(--border); background: #fff; border-radius: 16px; padding: 14px 14px; font-size: 14px; color: var(--text); caret-color: var(--text);" />
           <button class="btn primary" id="unlockBtn" type="button" aria-label="Bestätigen" style="width: 56px; padding: 0;">
-            <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px;">
-              <path d="M20.285 6.709a1.35 1.35 0 0 1 0 1.91l-9.06 9.06a1.35 1.35 0 0 1-1.91 0L3.715 12.08a1.35 1.35 0 0 1 1.91-1.91l4.645 4.645 8.105-8.105a1.35 1.35 0 0 1 1.91 0Z" fill="currentColor"/>
-            </svg>
+            <span id="unlockIconOk" style="display:inline-flex; align-items:center; justify-content:center;">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px;">
+                <path d="M20.285 6.709a1.35 1.35 0 0 1 0 1.91l-9.06 9.06a1.35 1.35 0 0 1-1.91 0L3.715 12.08a1.35 1.35 0 0 1 1.91-1.91l4.645 4.645 8.105-8.105a1.35 1.35 0 0 1 1.91 0Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span id="unlockIconBad" style="display:none; align-items:center; justify-content:center;">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 22px; height: 22px;">
+                <path d="M17.657 6.343a1.35 1.35 0 0 1 0 1.91L13.91 12l3.747 3.747a1.35 1.35 0 1 1-1.91 1.91L12 13.91l-3.747 3.747a1.35 1.35 0 1 1-1.91-1.91L10.09 12 6.343 8.253a1.35 1.35 0 1 1 1.91-1.91L12 10.09l3.747-3.747a1.35 1.35 0 0 1 1.91 0Z" fill="currentColor"/>
+              </svg>
+            </span>
           </button>
         </div>
         <div id="gateMsg"></div>
@@ -402,6 +424,8 @@
     const gateMsgEl = document.getElementById('gateMsg');
     const pwEl = document.getElementById('pw');
     const unlockBtn = document.getElementById('unlockBtn');
+    const unlockIconOk = document.getElementById('unlockIconOk');
+    const unlockIconBad = document.getElementById('unlockIconBad');
     const appEl = document.getElementById('app');
 
     const gridEl = document.getElementById('grid');
@@ -652,17 +676,34 @@
       const ok = entered === GALLERY_PASSWORD;
 
       if (!ok){
-        // no visible text; just a quick shake-ish feedback via focus ring
+        // show inline error inside the field
+        pwEl.value = '';
+        pwEl.placeholder = 'Falsches Passwort';
+        pwEl.classList.add('error');
+        pwEl.style.borderColor = 'rgba(239,68,68,0.55)';
+        pwEl.style.color = 'var(--text)';
+        pwEl.style.caretColor = 'var(--text)';
+
+        unlockBtn.classList.remove('primary','success');
+        unlockBtn.classList.add('danger');
+        if (unlockIconOk) unlockIconOk.style.display = 'none';
+        if (unlockIconBad) unlockIconBad.style.display = 'inline-flex';
+
         pwEl.focus();
-        pwEl.select();
-        unlockBtn.classList.remove('success');
-        unlockBtn.classList.add('primary');
         return;
       }
 
+      // reset field visuals
+      pwEl.placeholder = 'Passwort';
+      pwEl.classList.remove('error');
+      pwEl.style.borderColor = '';
+      pwEl.style.color = '';
+
       // turn button green briefly, then open app
-      unlockBtn.classList.remove('primary');
+      unlockBtn.classList.remove('primary','danger');
       unlockBtn.classList.add('success');
+      if (unlockIconOk) unlockIconOk.style.display = 'inline-flex';
+      if (unlockIconBad) unlockIconBad.style.display = 'none';
       unlockBtn.disabled = true;
 
       await new Promise(r => setTimeout(r, 220));
@@ -674,6 +715,18 @@
     }
 
     unlockBtn.addEventListener('click', unlock);
+    pwEl.addEventListener('input', ()=>{
+      // reset error styling once user starts typing again
+      pwEl.placeholder = 'Passwort';
+      pwEl.classList.remove('error');
+      pwEl.style.borderColor = '';
+      pwEl.style.color = '';
+      unlockBtn.classList.remove('danger','success');
+      unlockBtn.classList.add('primary');
+      if (unlockIconOk) unlockIconOk.style.display = 'inline-flex';
+      if (unlockIconBad) unlockIconBad.style.display = 'none';
+    });
+
     pwEl.addEventListener('keydown', (e)=>{
       if (e.key === 'Enter') unlock();
     });
